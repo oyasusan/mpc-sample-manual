@@ -693,7 +693,46 @@ body {
 }
 .tip-cta:hover { opacity: 0.85; }
 
+/* ─── Callout boxes (Tips / Notes / Important) ── */
+.de-text-block {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 14px 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: rgba(59, 130, 200, 0.07);
+  border: 1px solid rgba(59, 130, 200, 0.25);
+  border-left: 4px solid #3b82c8;
+}
+.de-text-block.callout-important {
+  background: rgba(232, 130, 0, 0.08);
+  border-color: rgba(232, 130, 0, 0.3);
+  border-left-color: #e88000;
+}
+.de-text-block.callout-important .de-tb-icon { color: #e88000; }
+.de-tb-icon {
+  padding: 12px 10px 12px 14px;
+  color: #3b82c8;
+  font-size: 1rem;
+  vertical-align: top;
+  white-space: nowrap;
+  width: 36px;
+  font-family: "Font Awesome 6 Free", "Font Awesome 5 Free", sans-serif;
+  font-weight: 900;
+}
+.de-tb-text {
+  padding: 10px 14px 10px 4px;
+  font-size: 0.875rem;
+  line-height: 1.65;
+  color: var(--text);
+  vertical-align: top;
+}
+.de-tb-text p, .de-tb-text div { margin: 0; }
+/* callout テーブルはスクロールラッパー不要 */
+.table-wrap:has(.de-text-block) { overflow: visible; border: none; background: none; padding: 0; }
+
 </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous">
 </head>
 <body>
 
@@ -928,6 +967,14 @@ function navigateTo(id, pushState) {
     tipEl.innerHTML = tipHtml;
     document.getElementById('pageContent').prepend(tipEl.firstElementChild);
   }
+
+  // Callout ボックスのタイプ分類（Important=橙、Tip/Note=青）
+  document.querySelectorAll('#pageContent .de-text-block').forEach(t => {
+    const icon = t.querySelector('.de-text-block-icon');
+    if (icon && icon.textContent.codePointAt(0) === 0xf06a) {
+      t.classList.add('callout-important');
+    }
+  });
 
   // テーブルをスクロール可能なラッパーで囲む（モバイル対応）
   document.querySelectorAll('#pageContent table').forEach(t => {
