@@ -694,42 +694,42 @@ body {
 .tip-cta:hover { opacity: 0.85; }
 
 /* ─── Callout boxes (Tips / Notes / Important) ── */
+/* .page-content table/td の汎用スタイルを上書き */
+.de-text-block { min-width: 0 !important; font-size: 0.875rem !important; }
+.de-text-block td { min-width: 0 !important; border: none !important; background: none !important; white-space: normal !important; }
+/* callout ボックス本体 */
 .de-text-block {
   width: 100%;
   border-collapse: collapse;
   margin: 14px 0;
   border-radius: 8px;
-  overflow: hidden;
   background: rgba(59, 130, 200, 0.07);
-  border: 1px solid rgba(59, 130, 200, 0.25);
-  border-left: 4px solid #3b82c8;
+  border: 1px solid rgba(59, 130, 200, 0.25) !important;
+  border-left: 4px solid #3b82c8 !important;
 }
 .de-text-block.callout-important {
-  background: rgba(232, 130, 0, 0.08);
-  border-color: rgba(232, 130, 0, 0.3);
-  border-left-color: #e88000;
+  background: rgba(232, 130, 0, 0.08) !important;
+  border-color: rgba(232, 130, 0, 0.3) !important;
+  border-left-color: #e88000 !important;
 }
-.de-text-block.callout-important .de-tb-icon { color: #e88000; }
 .de-tb-icon {
-  padding: 12px 10px 12px 14px;
+  padding: 12px 10px 12px 14px !important;
   color: #3b82c8;
-  font-size: 1rem;
-  vertical-align: top;
-  white-space: nowrap;
-  width: 36px;
+  font-size: 1.1rem !important;
+  vertical-align: top !important;
+  white-space: nowrap !important;
+  width: 40px;
   font-family: "Font Awesome 6 Free", "Font Awesome 5 Free", sans-serif;
   font-weight: 900;
 }
+.de-text-block.callout-important .de-tb-icon { color: #e88000; }
 .de-tb-text {
-  padding: 10px 14px 10px 4px;
-  font-size: 0.875rem;
+  padding: 10px 14px 10px 2px !important;
   line-height: 1.65;
-  color: var(--text);
-  vertical-align: top;
+  color: var(--text) !important;
+  vertical-align: top !important;
 }
 .de-tb-text p, .de-tb-text div { margin: 0; }
-/* callout テーブルはスクロールラッパー不要 */
-.table-wrap:has(.de-text-block) { overflow: visible; border: none; background: none; padding: 0; }
 
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous">
@@ -976,9 +976,10 @@ function navigateTo(id, pushState) {
     }
   });
 
-  // テーブルをスクロール可能なラッパーで囲む（モバイル対応）
+  // テーブルをスクロール可能なラッパーで囲む（モバイル対応・calloutは除外）
   document.querySelectorAll('#pageContent table').forEach(t => {
     if (t.closest('.table-wrap')) return;
+    if (t.classList.contains('de-text-block')) return;
     const wrap = document.createElement('div');
     wrap.className = 'table-wrap';
     t.parentNode.insertBefore(wrap, t);
