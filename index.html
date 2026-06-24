@@ -694,45 +694,31 @@ body {
 .tip-cta:hover { opacity: 0.85; }
 
 /* ─── Callout boxes (Tips / Notes / Important) ── */
-/* .page-content table/td の汎用スタイルを上書き */
-.de-text-block { min-width: 0 !important; font-size: 0.875rem !important; }
-.de-text-block td { min-width: 0 !important; border: none !important; background: none !important; white-space: normal !important; }
-/* callout ボックス本体 */
-.de-text-block {
-  width: 100%;
-  border-collapse: collapse;
+.callout-box {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
   margin: 14px 0;
+  padding: 12px 16px;
   border-radius: 8px;
   background: rgba(59, 130, 200, 0.07);
-  border: 1px solid rgba(59, 130, 200, 0.25) !important;
-  border-left: 4px solid #3b82c8 !important;
+  border: 1px solid rgba(59, 130, 200, 0.25);
+  border-left: 4px solid #3b82c8;
 }
-.de-text-block.callout-important {
-  background: rgba(232, 130, 0, 0.08) !important;
-  border-color: rgba(232, 130, 0, 0.3) !important;
-  border-left-color: #e88000 !important;
+.callout-box.callout-important {
+  background: rgba(232, 130, 0, 0.08);
+  border: 1px solid rgba(232, 130, 0, 0.3);
+  border-left: 4px solid #e88000;
 }
-.de-tb-icon {
-  padding: 12px 10px 12px 14px !important;
-  color: #3b82c8;
-  font-size: 1.1rem !important;
-  vertical-align: top !important;
-  white-space: nowrap !important;
-  width: 40px;
-  font-family: "Font Awesome 6 Free", "Font Awesome 5 Free", sans-serif;
-  font-weight: 900;
-}
-.de-text-block.callout-important .de-tb-icon { color: #e88000; }
-.de-tb-text {
-  padding: 10px 14px 10px 2px !important;
-  line-height: 1.65;
-  color: var(--text) !important;
-  vertical-align: top !important;
-}
-.de-tb-text p, .de-tb-text div { margin: 0; }
+.callout-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; line-height: 1.7; }
+.callout-text { font-size: 0.875rem; line-height: 1.65; color: var(--text); flex: 1; }
+.callout-text p, .callout-text div { margin: 0; }
+/* ─── Japanese images (英語版から注入) ── */
+.en-imgs { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 20px; }
+.en-imgs figure { margin: 0; }
+.en-imgs img { max-width: 100%; border-radius: 6px; display: block; }
 
 </style>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous">
 </head>
 <body>
 
@@ -815,7 +801,27 @@ function getTitle(item) {
   return (currentLang === 'ja' && JA_TITLES[item.id]) ? JA_TITLES[item.id] : item.title;
 }
 function getPageContent(id) {
-  return (currentLang === 'ja' ? PAGES_JA[id] : PAGES[id]) || PAGES[id] || '<p>No content available.</p>';
+  if (currentLang !== 'ja') return PAGES[id] || '<p>No content available.</p>';
+  const jaHtml = PAGES_JA[id];
+  if (!jaHtml) return PAGES[id] || '<p>No content available.</p>';
+  const enHtml = PAGES[id] || '';
+  return mergeJaImages(jaHtml, enHtml);
+}
+function mergeJaImages(jaHtml, enHtml) {
+  const allImgs = [...enHtml.matchAll(/<img[^>]+>/g)].map(m => m[0]);
+  if (allImgs.length === 0) return jaHtml;
+  // h2/h3 でセクション分割
+  const jaParts = jaHtml.split(/(?=<h[23])/i);
+  const enParts = enHtml.split(/(?=<h[23])/i);
+  if (jaParts.length <= 1) {
+    return jaHtml + '<div class="en-imgs">' + allImgs.map(i => `<figure>${i}</figure>`).join('') + '</div>';
+  }
+  return jaParts.map((jaPart, idx) => {
+    const enPart = enParts[Math.min(idx, enParts.length - 1)] || '';
+    const sectionImgs = [...enPart.matchAll(/<img[^>]+>/g)].map(m => m[0]);
+    if (sectionImgs.length === 0) return jaPart;
+    return jaPart + '<div class="en-imgs">' + sectionImgs.map(i => `<figure>${i}</figure>`).join('') + '</div>';
+  }).join('');
 }
 function buildSearchIndex() {
   return FLAT.map(item => {
@@ -968,12 +974,19 @@ function navigateTo(id, pushState) {
     document.getElementById('pageContent').prepend(tipEl.firstElementChild);
   }
 
-  // Callout ボックスのタイプ分類（Important=橙、Tip/Note=青）
-  document.querySelectorAll('#pageContent .de-text-block').forEach(t => {
-    const icon = t.querySelector('.de-text-block-icon');
-    if (icon && icon.textContent.codePointAt(0) === 0xf06a) {
-      t.classList.add('callout-important');
-    }
+  // Callout: de-text-block テーブルを div に置き換える
+  document.querySelectorAll('#pageContent .de-text-block').forEach(table => {
+    const iconEl = table.querySelector('.de-text-block-icon');
+    const textEl = table.querySelector('.de-tb-text');
+    if (!textEl) return;
+    const isImportant = iconEl && iconEl.textContent.codePointAt(0) === 0xf06a;
+    const box = document.createElement('div');
+    box.className = 'callout-box' + (isImportant ? ' callout-important' : '');
+    box.innerHTML = '<span class="callout-icon">' + (isImportant ? '⚠️' : 'ℹ️') + '</span>'
+      + '<div class="callout-text">' + textEl.innerHTML + '</div>';
+    table.closest('.table-wrap')
+      ? table.closest('.table-wrap').replaceWith(box)
+      : table.replaceWith(box);
   });
 
   // テーブルをスクロール可能なラッパーで囲む（モバイル対応・calloutは除外）
