@@ -469,6 +469,170 @@ body {
   .menu-btn { display: none; }
   .overlay { display: none !important; }
 }
+
+/* ─── 逆引き (Use Case) Overlay ───────────── */
+.uc-btn {
+  width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  border: none; background: transparent; color: var(--text-muted);
+  cursor: pointer; border-radius: var(--radius);
+  font-size: 18px; flex-shrink: 0;
+  transition: color var(--transition), background var(--transition);
+}
+.uc-btn:hover { color: var(--red); background: var(--surface3); }
+.uc-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.82);
+  z-index: 50;
+  overflow-y: auto;
+  padding: 48px 16px 32px;
+  -webkit-overflow-scrolling: touch;
+}
+.uc-overlay.active { display: block; }
+.uc-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  width: min(100%, 680px);
+  margin: 0 auto;
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0,0,0,.6);
+}
+.uc-head {
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--surface);
+  position: sticky;
+  top: -48px;
+  z-index: 2;
+}
+.uc-head-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.uc-head-icon { font-size: 20px; }
+.uc-head-title {
+  flex: 1;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.uc-close {
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  border: none; background: var(--surface3);
+  color: var(--text-muted); border-radius: 6px; cursor: pointer;
+  font-size: 14px; flex-shrink: 0;
+  transition: all var(--transition);
+}
+.uc-close:hover { background: var(--red); color: #fff; }
+.uc-search {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 0.95rem;
+  padding: 10px 14px;
+  outline: none;
+  font-family: inherit;
+}
+.uc-search::placeholder { color: var(--text-faint); }
+.uc-search:focus { border-color: var(--red); }
+.uc-body { padding: 12px 12px 20px; }
+.uc-category { margin-bottom: 20px; }
+.uc-cat-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-faint);
+  margin-bottom: 6px;
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.uc-items { display: flex; flex-direction: column; gap: 2px; }
+.uc-item { border-radius: 8px; overflow: hidden; }
+.uc-item-hd {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  gap: 10px;
+  font-size: 0.88rem;
+  color: var(--text);
+  cursor: pointer;
+  transition: background var(--transition);
+  -webkit-tap-highlight-color: transparent;
+}
+.uc-item-hd:hover { background: var(--surface2); }
+.uc-item.open .uc-item-hd { background: var(--surface2); }
+.uc-item-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--red);
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+.uc-item-label { flex: 1; line-height: 1.4; }
+.uc-item-arrow {
+  font-size: 9px;
+  color: var(--text-faint);
+  transition: transform var(--transition);
+  flex-shrink: 0;
+}
+.uc-item.open .uc-item-arrow { transform: rotate(90deg); }
+.uc-pages {
+  display: none;
+  flex-direction: column;
+  gap: 3px;
+  padding: 4px 12px 8px 30px;
+}
+.uc-item.open .uc-pages { display: flex; }
+.uc-page-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--surface3);
+  border-radius: 6px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all var(--transition);
+  border: none;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+.uc-page-btn::before { content: '→'; color: var(--red); font-size: 11px; flex-shrink: 0; }
+.uc-page-btn:hover { background: var(--red); color: #fff; }
+.uc-page-btn:hover::before { color: #fff; }
+.uc-empty {
+  padding: 40px 16px;
+  text-align: center;
+  color: var(--text-faint);
+  font-size: 0.9rem;
+  line-height: 1.8;
+}
+.uc-hint {
+  padding: 10px 12px;
+  background: rgba(232,0,45,.07);
+  border: 1px solid rgba(232,0,45,.15);
+  border-radius: var(--radius);
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
 </style>
 </head>
 <body>
@@ -480,6 +644,7 @@ body {
     <div class="header-logo">MPC</div>
     <span class="header-text">MPC Sample User Guide</span>
   </div>
+  <button class="uc-btn" id="ucBtn" aria-label="使い方から探す" title="使い方から探す (u)">&#128161;</button>
   <button class="search-btn" id="searchBtn" aria-label="Search" title="Search (/)">&#128269;</button>
 </header>
 
@@ -514,6 +679,21 @@ body {
       <button class="search-close-btn" id="searchClose">Close</button>
     </div>
     <div class="search-results" id="searchResults"></div>
+  </div>
+</div>
+
+<!-- 逆引き (Use Case) overlay -->
+<div class="uc-overlay" id="ucOverlay" role="dialog" aria-modal="true" aria-label="使い方から探す">
+  <div class="uc-box">
+    <div class="uc-head">
+      <div class="uc-head-row">
+        <span class="uc-head-icon">💡</span>
+        <span class="uc-head-title">使い方から探す</span>
+        <button class="uc-close" id="ucClose" aria-label="閉じる">✕</button>
+      </div>
+      <input type="search" class="uc-search" id="ucSearch" placeholder="やりたいことを入力…（例: 録音、エフェクト）" autocomplete="off" spellcheck="false">
+    </div>
+    <div class="uc-body" id="ucBody"></div>
   </div>
 </div>
 
@@ -729,11 +909,160 @@ function doSearch(q) {
   });
 }
 
+// ── 逆引き Use-Case データ ──────────────────
+const USE_CASES = [
+  { category: "はじめて使う", emoji: "🚀", items: [
+    { label: "初めてセットアップしたい",             tags: ["接続","初期設定","セットアップ","はじめて"],  pages: ["introduction","setup","firmware_updates","connection_diagram"] },
+    { label: "ファームウェアを更新したい",           tags: ["ファームウェア","アップデート","更新"],        pages: ["firmware_updates"] },
+    { label: "PCやオーディオ機器と接続したい",       tags: ["接続","PC","オーディオ","配線"],              pages: ["connection_diagram","setup","features"] },
+    { label: "チュートリアルで基本操作を学びたい",   tags: ["チュートリアル","基本","入門","練習"],         pages: ["tutorial"] },
+  ]},
+  { category: "サンプルを再生する", emoji: "🎵", items: [
+    { label: "パッドを叩いて音を出したい",                      tags: ["パッド","演奏","再生","鳴らす"],           pages: ["tutorial","sample_mode"] },
+    { label: "サンプルを探して選びたい（Sample Select）",        tags: ["サンプル","選択","ブラウズ","Sample Select"], pages: ["tutorial","sample_mode"] },
+    { label: "チョップモードで再生したい",                       tags: ["チョップ","Chop"],                         pages: ["pad_play"] },
+    { label: "ループ再生したい",                                 tags: ["ループ","Loop","繰り返し"],                 pages: ["pad_play"] },
+    { label: "リバース（逆再生）したい",                         tags: ["リバース","逆再生","Reverse"],              pages: ["pad_play"] },
+    { label: "特定のパッドだけをミュートしたい",                  tags: ["ミュート","Mute","消音"],                   pages: ["pad_play"] },
+    { label: "ベロシティを細かく調整したい（16 Levels）",         tags: ["16レベル","ベロシティ","強弱","16 Levels"],  pages: ["pad_play"] },
+  ]},
+  { category: "サンプルを編集する", emoji: "✂️", items: [
+    { label: "サンプルのスタート/エンドをトリムしたい",  tags: ["トリム","Trim","編集","スタート","エンド"],   pages: ["sample_mode"] },
+    { label: "音量・パンを調整したい（Mix）",            tags: ["音量","Mix","パン","ミックス","バランス"],    pages: ["sample_mode"] },
+    { label: "サンプルのピッチ（音程）を変えたい",       tags: ["ピッチ","チューン","Tune","音程","移調"],     pages: ["sample_mode"] },
+    { label: "フィルターをかけたい",                    tags: ["フィルター","Filter","カットオフ"],           pages: ["sample_mode"] },
+    { label: "アンプエンベロープを設定したい",           tags: ["エンベロープ","Amp Env","アタック","リリース"], pages: ["sample_mode"] },
+    { label: "マイクや外部入力でサンプリングしたい",     tags: ["サンプリング","録音","マイク","レコード"],     pages: ["sample_record_mode","input_configuration"] },
+    { label: "サンプルを読み込み・保存したい",           tags: ["ロード","セーブ","読み込み","保存","ファイル"], pages: ["loading_and_saving_samples","project"] },
+  ]},
+  { category: "シーケンスを作る", emoji: "🥁", items: [
+    { label: "ビートを録音したい",                              tags: ["録音","シーケンス","ビート","レコード"],          pages: ["tutorial","recording_sequences"] },
+    { label: "シーケンスを再生・停止したい",                    tags: ["再生","停止","シーケンス","PLAY","STOP"],         pages: ["tutorial","sequence_mode"] },
+    { label: "BPM（テンポ）を設定したい",                       tags: ["BPM","テンポ","Tap Tempo","速度"],               pages: ["recording_sequences","features"] },
+    { label: "クオンタイズ（タイムコレクト）を設定したい",       tags: ["クオンタイズ","タイムコレクト","Time Correct"],    pages: ["time_correct","recording_sequences"] },
+    { label: "シーケンスの長さを変えたい",                       tags: ["シーケンス長","Half","Double","長さ"],            pages: ["editing_sequences"] },
+    { label: "ステップ入力でプログラムしたい",                   tags: ["ステップ","Step Edit","プログラム","ステップ入力"], pages: ["step_edit"] },
+    { label: "シーケンスのスピードを半分/2倍にしたい",           tags: ["Half Speed","Double Speed","速度","倍速","半速"], pages: ["editing_sequences"] },
+    { label: "曲として複数のシーケンスを並べたい",               tags: ["ソング","Song Mode","アレンジ","曲作り"],          pages: ["song_mode"] },
+    { label: "パラメータオートメーションを録音したい",           tags: ["オートメーション","自動化","パラメータ"],           pages: ["recording_sequences"] },
+  ]},
+  { category: "エフェクトをかける", emoji: "🎛️", items: [
+    { label: "パッドでエフェクトをトリガーしたい（Pad FX）",      tags: ["Pad FX","エフェクト","パッド","トリガー"],   pages: ["pad_fx"] },
+    { label: "つまみでエフェクトをコントロールしたい（Knob FX）", tags: ["Knob FX","つまみ","エフェクト","ノブ"],      pages: ["knob_fx"] },
+    { label: "ディレイ（残響）をかけたい",                        tags: ["ディレイ","Delay","エコー","反響"],          pages: ["knob_fx","pad_fx"] },
+    { label: "リバーブをかけたい",                               tags: ["リバーブ","Reverb","残響","ホール"],          pages: ["knob_fx","pad_fx"] },
+    { label: "歪み（ディストーション）をかけたい",                tags: ["ディストーション","歪み","Distortion"],       pages: ["knob_fx"] },
+    { label: "フレックスビートを使いたい",                        tags: ["Flex Beat","フレックスビート"],              pages: ["flex_beat"] },
+    { label: "コンプレッサーをかけたい",                          tags: ["コンプレッサー","Compressor","コンプ"],      pages: ["compressor"] },
+    { label: "モジュレーション系エフェクトをかけたい",            tags: ["モジュレーション","Modulation","コーラス","フランジャー"], pages: ["knob_fx"] },
+  ]},
+  { category: "接続・設定する", emoji: "🔌", items: [
+    { label: "MIDIキーボードや外部機器と接続したい",   tags: ["MIDI","接続","外部機器","キーボード"],                 pages: ["features","midi_configuration","connection_diagram"] },
+    { label: "ヘッドフォン・イヤフォンで聴きたい",    tags: ["ヘッドフォン","イヤフォン","PHONES","モニター"],       pages: ["features"] },
+    { label: "外部スピーカーやアンプに繋ぎたい",      tags: ["Audio Out","スピーカー","アンプ","出力","Line Out"],   pages: ["features","connection_diagram"] },
+    { label: "外部機器と同期したい（SYNC OUT）",       tags: ["SYNC","同期","クロック","Sync Out"],                  pages: ["features"] },
+    { label: "録音入力の設定をしたい",                tags: ["入力","Input","録音設定","ソース","モニター"],          pages: ["input_configuration"] },
+    { label: "フェーダーの動作を設定したい",           tags: ["フェーダー","Fader","スライダー"],                    pages: ["fader"] },
+    { label: "MIDI送受信の設定をしたい",               tags: ["MIDI","設定","コンフィグ","チャンネル","CC"],          pages: ["midi_configuration"] },
+    { label: "USB経由でPCと通信したい",               tags: ["USB","PC","接続","通信"],                             pages: ["setup","features"] },
+  ]},
+  { category: "プロジェクト管理", emoji: "💾", items: [
+    { label: "プロジェクトを保存したい",               tags: ["保存","Save","プロジェクト"],                         pages: ["project"] },
+    { label: "新しいプロジェクトを作りたい",           tags: ["新規","New Project","プロジェクト"],                  pages: ["project"] },
+    { label: "デモやプリセットキットを読み込みたい",   tags: ["デモ","Demo","キット","プリセット","サンプルパック"],  pages: ["project"] },
+    { label: "microSDカードでデータを管理したい",      tags: ["microSD","SDカード","データ","ファイル","ストレージ"], pages: ["project","features"] },
+    { label: "仕様・スペックを確認したい",             tags: ["仕様","スペック","Specifications","スペシフィケーション"], pages: ["technical_specifications"] },
+  ]},
+];
+
+// ── 逆引き 関数 ────────────────────────────
+function openUseCase() {
+  document.getElementById('ucOverlay').classList.add('active');
+  const input = document.getElementById('ucSearch');
+  input.value = '';
+  renderUseCases('');
+  setTimeout(() => input.focus(), 50);
+}
+function closeUseCase() {
+  document.getElementById('ucOverlay').classList.remove('active');
+}
+function renderUseCases(query) {
+  const body = document.getElementById('ucBody');
+  const q = query.toLowerCase().trim();
+  let html = '';
+  let total = 0;
+
+  for (const cat of USE_CASES) {
+    const items = cat.items.filter(item =>
+      !q ||
+      item.label.toLowerCase().includes(q) ||
+      item.tags.some(t => t.toLowerCase().includes(q))
+    );
+    if (!items.length) continue;
+    total += items.length;
+
+    if (!q) {
+      html += `<div class="uc-category">
+        <div class="uc-cat-title"><span>${cat.emoji}</span>${cat.category}</div>
+        <div class="uc-items">`;
+    } else {
+      html += `<div class="uc-category"><div class="uc-items">`;
+    }
+
+    for (const item of items) {
+      const pageLinks = item.pages.map(pid => {
+        const p = FLAT.find(f => f.id === pid);
+        return p ? `<button class="uc-page-btn" data-id="${pid}">${p.title}</button>` : '';
+      }).join('');
+      const labelHl = q
+        ? item.label.replace(new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), m => `<mark>${m}</mark>`)
+        : item.label;
+      html += `<div class="uc-item">
+        <div class="uc-item-hd">
+          <span class="uc-item-dot"></span>
+          <span class="uc-item-label">${labelHl}</span>
+          <span class="uc-item-arrow">▶</span>
+        </div>
+        <div class="uc-pages">${pageLinks}</div>
+      </div>`;
+    }
+    html += `</div></div>`;
+  }
+
+  if (!total) {
+    html = `<div class="uc-empty">「${q}」に一致する使い方が見つかりませんでした。<br>別のキーワードをお試しください。</div>`;
+  } else if (!q) {
+    html = `<div class="uc-hint">💡 やりたいことをタップすると、関連ページへのリンクが表示されます。</div>` + html;
+  }
+
+  body.innerHTML = html;
+
+  body.querySelectorAll('.uc-item-hd').forEach(hd => {
+    hd.addEventListener('click', () => hd.closest('.uc-item').classList.toggle('open'));
+  });
+  body.querySelectorAll('.uc-page-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      navigateTo(btn.dataset.id);
+      closeUseCase();
+    });
+  });
+
+  // 検索時は全て展開
+  if (q) {
+    body.querySelectorAll('.uc-item').forEach(el => el.classList.add('open'));
+  }
+}
+
 // ── Events ──────────────────────────────────
 document.getElementById('menuBtn').addEventListener('click', () => {
   document.getElementById('sidebar').classList.contains('open') ? closeSidebar() : openSidebar();
 });
 document.getElementById('overlay').addEventListener('click', closeSidebar);
+document.getElementById('ucBtn').addEventListener('click', openUseCase);
+document.getElementById('ucClose').addEventListener('click', closeUseCase);
+document.getElementById('ucSearch').addEventListener('input', e => renderUseCases(e.target.value));
+document.getElementById('ucOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeUseCase(); });
 document.getElementById('searchBtn').addEventListener('click', openSearch);
 document.getElementById('searchClose').addEventListener('click', closeSearch);
 document.getElementById('searchInput').addEventListener('input', e => {
@@ -749,7 +1078,10 @@ document.addEventListener('keydown', e => {
   if (e.key === '/' && !e.ctrlKey && !e.metaKey && document.activeElement.tagName !== 'INPUT') {
     e.preventDefault(); openSearch();
   }
-  if (e.key === 'Escape') closeSearch();
+  if (e.key === 'u' && !e.ctrlKey && !e.metaKey && document.activeElement.tagName !== 'INPUT') {
+    e.preventDefault(); openUseCase();
+  }
+  if (e.key === 'Escape') { closeSearch(); closeUseCase(); }
   if (e.key === 'ArrowLeft' && !e.ctrlKey) {
     const { prev } = getNeighbors(currentId);
     if (prev) navigateTo(prev.id);
