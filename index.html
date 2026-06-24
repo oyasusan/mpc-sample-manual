@@ -969,7 +969,7 @@ function updateSidebarActive(id) {
 
 // ── Page rendering ──────────────────────────
 function navigateTo(id, pushState) {
-  if (!id || !PAGES[id]) return;
+  if (!id || (!PAGES[id] && id !== 'tips_notes')) return;
   currentId = id;
 
   // Update URL hash
